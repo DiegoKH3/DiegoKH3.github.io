@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Contador</title>
+    <link rel="stylesheet" href="../css/diseño2.css">
+</head>
+<body>
+    <h1>Contador de Stream</h1>
+
+    <div class="formulario">
+        <h2>Añadir persona</h2>
+        <input type="text" id="nombre" placeholder="Nombre">
+        <input type="number" id="subs" placeholder="Subs" min="0">
+        <input type="number" id="bits" placeholder="Bits (100 en 100)" min="0" step="100">
+        <input type="number" id="cofres" placeholder="Cofres" min="0">
+        <button id="btnAgregar">Añadir</button>
+    </div>
+
+    <h2>Personas</h2>
+    <div class="personas" id="listaPersonas"></div>
+
+    <div class="totales">
+        <h2>Totales generales</h2>
+        <p>Subs: <span id="totalSubs">0</span></p>
+        <p>Bits: <span id="totalBits">0</span></p>
+        <p>Cofres: <span id="totalCofres">0</span></p>
+    </div>
+
+    <div class="tiempo-final">
+        <h2>⏱ Tiempo total</h2>
+        <p id="tiempoTotal">0 horas 0 minutos</p>
+    </div>
+
+    <!-- Botón para volver al inicio -->
+    <a href="index.html" class="btn-volver">← Volver al Inicio</a>
+
+    <script src="../scripts/funcionalidad.js" defer></script>
+</body>
+</html>
