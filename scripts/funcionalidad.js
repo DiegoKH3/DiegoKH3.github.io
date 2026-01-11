@@ -116,8 +116,8 @@ function crearTarjeta(persona) {
         <p><strong>Tiempo:</strong> ${horas}h ${minutos}min</p>
 
         <div class="acciones">
-            <button onclick="editarPersona(this)">✏️ Editar</button>
-            <button onclick="eliminarPersona(this)">❌ Eliminar</button>
+            <button onclick="editarPersona(this)">Editar</button>
+            <button onclick="eliminarPersona(this)">Eliminar</button>
         </div>
     `;
 
@@ -224,4 +224,5 @@ function reiniciarTodo() {
         limpiarFormulario();
     }
 }
+
 
