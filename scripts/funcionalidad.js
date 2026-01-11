@@ -4,16 +4,12 @@ let totalCofres = 0;
 let tarjetaEditando = null;
 let idEditando = null;
 
-// Obtener datos del localStorage o inicializar vacío
 let personas = JSON.parse(localStorage.getItem("personas")) || [];
 
 document.getElementById("btnAgregar").addEventListener("click", agregarPersona);
 document.addEventListener("DOMContentLoaded", cargarPersonas);
 document.getElementById("btnReiniciar")?.addEventListener("click", reiniciarTodo);
 
-// =======================
-// 📥 CARGAR PERSONAS
-// =======================
 function cargarPersonas() {
     totalSubs = 0;
     totalBits = 0;
@@ -29,9 +25,6 @@ function cargarPersonas() {
     actualizarTotales();
 }
 
-// =======================
-// ➕ AGREGAR / EDITAR
-// =======================
 function agregarPersona() {
     const nombre = document.getElementById("nombre").value.trim();
     const subs = parseInt(document.getElementById("subs").value) || 0;
@@ -50,11 +43,9 @@ function agregarPersona() {
 
     const persona = { id: idEditando || Date.now().toString(), nombre, subs, bits, cofres };
 
-    // ✏️ EDITAR
     if (idEditando) {
         const index = personas.findIndex(p => p.id === idEditando);
         if (index > -1) {
-            // Actualizar totales: restar antiguos y sumar nuevos
             totalSubs -= personas[index].subs;
             totalBits -= personas[index].bits;
             totalCofres -= personas[index].cofres;
@@ -63,16 +54,13 @@ function agregarPersona() {
             totalBits += bits;
             totalCofres += cofres;
 
-            // Actualizar array
             personas[index] = persona;
 
-            // Actualizar tarjeta en su lugar sin moverla
             tarjetaEditando.querySelector("h3").textContent = persona.nombre;
             tarjetaEditando.querySelector(".subs").textContent = persona.subs;
             tarjetaEditando.querySelector(".bits").textContent = persona.bits;
             tarjetaEditando.querySelector(".cofres").textContent = persona.cofres;
 
-            // Recalcular tiempos
             const minutosSubs = persona.subs * 30;
             const minutosBits = (persona.bits / 100) * 6;
             const minutosCofres = persona.cofres * 10;
@@ -89,7 +77,6 @@ function agregarPersona() {
         return;
     }
 
-    // ➕ CREAR
     personas.push(persona);
     crearTarjeta(persona);
 
@@ -102,9 +89,6 @@ function agregarPersona() {
     limpiarFormulario();
 }
 
-// =======================
-// 🧱 CREAR TARJETA
-// =======================
 function crearTarjeta(persona) {
     const minutosSubs = persona.subs * 30;
     const minutosBits = (persona.bits / 100) * 6;
@@ -128,17 +112,14 @@ function crearTarjeta(persona) {
         <p><strong>Tiempo:</strong> ${horas}h ${minutos}min</p>
 
         <div class="acciones">
-            <button onclick="editarPersona(this)">✏️ Editar</button>
-            <button onclick="eliminarPersona(this)">❌ Eliminar</button>
+            <button onclick="editarPersona(this)">Editar</button>
+            <button onclick="eliminarPersona(this)">Eliminar</button>
         </div>
     `;
 
     document.getElementById("listaPersonas").appendChild(div);
 }
 
-// =======================
-// ✏️ EDITAR
-// =======================
 function editarPersona(boton) {
     const tarjeta = boton.closest(".persona");
 
@@ -150,13 +131,9 @@ function editarPersona(boton) {
     document.getElementById("bits").value = tarjeta.querySelector(".bits").textContent;
     document.getElementById("cofres").value = tarjeta.querySelector(".cofres").textContent;
 
-    // Hacer scroll hacia arriba al formulario
     document.querySelector(".formulario").scrollIntoView({ behavior: "smooth" });
 }
 
-// =======================
-// ❌ ELIMINAR
-// =======================
 function eliminarPersona(boton) {
     const tarjeta = boton.closest(".persona");
     const id = tarjeta.dataset.id;
@@ -168,7 +145,6 @@ function eliminarPersona(boton) {
     totalBits -= persona.bits;
     totalCofres -= persona.cofres;
 
-    // Eliminar del array y del DOM
     personas = personas.filter(p => p.id !== id);
     tarjeta.remove();
 
@@ -176,9 +152,6 @@ function eliminarPersona(boton) {
     actualizarTotales();
 }
 
-// =======================
-// 🔢 TOTALES
-// =======================
 function actualizarTotales() {
     document.getElementById("totalSubs").textContent = totalSubs;
     document.getElementById("totalBits").textContent = totalBits;
@@ -196,9 +169,6 @@ function actualizarTotales() {
         `${horas} horas ${minutos} minutos`;
 }
 
-// =======================
-// 🧹 LIMPIAR
-// =======================
 function limpiarFormulario() {
     document.getElementById("nombre").value = "";
     document.getElementById("subs").value = "";
@@ -208,32 +178,23 @@ function limpiarFormulario() {
     idEditando = null;
 }
 
-// =======================
-// 💾 GUARDAR EN LOCALSTORAGE
-// =======================
 function guardarPersonas() {
     localStorage.setItem("personas", JSON.stringify(personas));
 }
 
-// =======================
-// 🔄 REINICIAR TODO
-// =======================
 function reiniciarTodo() {
     if (confirm("¿Estás seguro de que quieres borrar todas las personas y reiniciar los totales?")) {
-        // Vaciar array y localStorage
         personas = [];
         localStorage.removeItem("personas");
 
-        // Vaciar DOM
         document.getElementById("listaPersonas").innerHTML = "";
 
-        // Resetear totales
         totalSubs = 0;
         totalBits = 0;
         totalCofres = 0;
         actualizarTotales();
 
-        // Limpiar formulario
         limpiarFormulario();
     }
 }
+
