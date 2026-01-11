@@ -199,3 +199,29 @@ function limpiarFormulario() {
 function guardarPersonas() {
     localStorage.setItem("personas", JSON.stringify(personas));
 }
+
+// =======================
+// 🔄 REINICIAR TODO
+// =======================
+document.getElementById("btnReiniciar").addEventListener("click", reiniciarTodo);
+
+function reiniciarTodo() {
+    if (confirm("¿Estás seguro de que quieres borrar todas las personas y reiniciar los totales?")) {
+        // Vaciar array y localStorage
+        personas = [];
+        localStorage.removeItem("personas");
+
+        // Vaciar DOM
+        document.getElementById("listaPersonas").innerHTML = "";
+
+        // Resetear totales
+        totalSubs = 0;
+        totalBits = 0;
+        totalCofres = 0;
+        actualizarTotales();
+
+        // Limpiar formulario
+        limpiarFormulario();
+    }
+}
+
