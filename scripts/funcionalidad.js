@@ -9,6 +9,7 @@ let personas = JSON.parse(localStorage.getItem("personas")) || [];
 
 document.getElementById("btnAgregar").addEventListener("click", agregarPersona);
 document.addEventListener("DOMContentLoaded", cargarPersonas);
+document.getElementById("btnReiniciar")?.addEventListener("click", reiniciarTodo);
 
 // =======================
 // 📥 CARGAR PERSONAS
@@ -51,24 +52,35 @@ function agregarPersona() {
 
     // ✏️ EDITAR
     if (idEditando) {
-        // Reemplazar en array
         const index = personas.findIndex(p => p.id === idEditando);
         if (index > -1) {
-            // Restar totales anteriores
+            // Actualizar totales: restar antiguos y sumar nuevos
             totalSubs -= personas[index].subs;
             totalBits -= personas[index].bits;
             totalCofres -= personas[index].cofres;
 
-            personas[index] = persona;
-
-            // Actualizar tarjeta visual
-            tarjetaEditando.remove();
-            crearTarjeta(persona);
-
-            // Sumar totales nuevos
             totalSubs += subs;
             totalBits += bits;
             totalCofres += cofres;
+
+            // Actualizar array
+            personas[index] = persona;
+
+            // Actualizar tarjeta en su lugar sin moverla
+            tarjetaEditando.querySelector("h3").textContent = persona.nombre;
+            tarjetaEditando.querySelector(".subs").textContent = persona.subs;
+            tarjetaEditando.querySelector(".bits").textContent = persona.bits;
+            tarjetaEditando.querySelector(".cofres").textContent = persona.cofres;
+
+            // Recalcular tiempos
+            const minutosSubs = persona.subs * 30;
+            const minutosBits = (persona.bits / 100) * 6;
+            const minutosCofres = persona.cofres * 10;
+            const totalMin = minutosSubs + minutosBits + minutosCofres;
+            const horas = Math.floor(totalMin / 60);
+            const minutos = totalMin % 60;
+
+            tarjetaEditando.querySelector("p strong").parentElement.textContent = `Tiempo: ${horas}h ${minutos}min`;
 
             guardarPersonas();
             actualizarTotales();
@@ -116,8 +128,8 @@ function crearTarjeta(persona) {
         <p><strong>Tiempo:</strong> ${horas}h ${minutos}min</p>
 
         <div class="acciones">
-            <button onclick="editarPersona(this)">Editar</button>
-            <button onclick="eliminarPersona(this)">Eliminar</button>
+            <button onclick="editarPersona(this)">✏️ Editar</button>
+            <button onclick="eliminarPersona(this)">❌ Eliminar</button>
         </div>
     `;
 
@@ -137,6 +149,9 @@ function editarPersona(boton) {
     document.getElementById("subs").value = tarjeta.querySelector(".subs").textContent;
     document.getElementById("bits").value = tarjeta.querySelector(".bits").textContent;
     document.getElementById("cofres").value = tarjeta.querySelector(".cofres").textContent;
+
+    // Hacer scroll hacia arriba al formulario
+    document.querySelector(".formulario").scrollIntoView({ behavior: "smooth" });
 }
 
 // =======================
@@ -203,8 +218,6 @@ function guardarPersonas() {
 // =======================
 // 🔄 REINICIAR TODO
 // =======================
-document.getElementById("btnReiniciar").addEventListener("click", reiniciarTodo);
-
 function reiniciarTodo() {
     if (confirm("¿Estás seguro de que quieres borrar todas las personas y reiniciar los totales?")) {
         // Vaciar array y localStorage
@@ -224,5 +237,3 @@ function reiniciarTodo() {
         limpiarFormulario();
     }
 }
-
-
