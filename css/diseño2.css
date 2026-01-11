@@ -10,7 +10,6 @@ body {
     line-height: 1.6;
 }
 
-/* Fondo borroso */
 body::before {
     content: '';
     position: fixed;
@@ -23,7 +22,6 @@ body::before {
     z-index: -1;
 }
 
-/* INICIO */
 .inicio {
     display: flex;
     justify-content: center;
@@ -42,7 +40,6 @@ body::before {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* TÍTULOS PRINCIPALES */
 h1 {
     text-align: center;
     margin-bottom: 35px;
@@ -52,7 +49,6 @@ h1 {
     letter-spacing: 0.5px;
 }
 
-/* GENERAL PARA CONTADOR */
 .formulario, .totales, .tiempo-final {
     background: rgba(30, 30, 30, 0.95);
     padding: 25px;
@@ -175,7 +171,6 @@ button:hover {
     background: #666;
 }
 
-/* Botón para volver al inicio */
 .btn-volver {
     display: block;
     width: 220px;
@@ -196,7 +191,6 @@ button:hover {
     background: #6a5acd;
 }
 
-/* ESTILOS ESPECÍFICOS PARA INDEX.HTML */
 .container {
     max-width: 850px;
     margin: 0 auto;
@@ -340,7 +334,6 @@ button:hover {
     color: #5865f2;
 }
 
-/* MEJORAS DE TEXTO EN TOTALES */
 .totales p {
     font-size: 1.1rem;
     margin-bottom: 15px;
@@ -370,7 +363,6 @@ button:hover {
     border: 2px solid rgba(106, 90, 205, 0.2);
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
     body {
         padding: 15px;
@@ -406,4 +398,5 @@ button:hover {
         font-size: 1.7rem;
         padding: 15px;
     }
+
 }
