@@ -1,10 +1,11 @@
-const API_URL = "http://localhost:3000/personas";
-
 let totalSubs = 0;
 let totalBits = 0;
 let totalCofres = 0;
 let tarjetaEditando = null;
 let idEditando = null;
+
+// Obtener datos del localStorage o inicializar vacío
+let personas = JSON.parse(localStorage.getItem("personas")) || [];
 
 document.getElementById("btnAgregar").addEventListener("click", agregarPersona);
 document.addEventListener("DOMContentLoaded", cargarPersonas);
@@ -13,24 +14,25 @@ document.addEventListener("DOMContentLoaded", cargarPersonas);
 // 📥 CARGAR PERSONAS
 // =======================
 function cargarPersonas() {
-    fetch(API_URL)
-        .then(res => res.json())
-        .then(data => {
-            data.forEach(persona => {
-                crearTarjeta(persona);
-                totalSubs += persona.subs;
-                totalBits += persona.bits;
-                totalCofres += persona.cofres;
-            });
-            actualizarTotales();
-        });
+    totalSubs = 0;
+    totalBits = 0;
+    totalCofres = 0;
+
+    personas.forEach(persona => {
+        crearTarjeta(persona);
+        totalSubs += persona.subs;
+        totalBits += persona.bits;
+        totalCofres += persona.cofres;
+    });
+
+    actualizarTotales();
 }
 
 // =======================
 // ➕ AGREGAR / EDITAR
 // =======================
 function agregarPersona() {
-    const nombre = document.getElementById("nombre").value;
+    const nombre = document.getElementById("nombre").value.trim();
     const subs = parseInt(document.getElementById("subs").value) || 0;
     const bits = parseInt(document.getElementById("bits").value) || 0;
     const cofres = parseInt(document.getElementById("cofres").value) || 0;
@@ -45,36 +47,47 @@ function agregarPersona() {
         return;
     }
 
-    const persona = { nombre, subs, bits, cofres };
+    const persona = { id: idEditando || Date.now().toString(), nombre, subs, bits, cofres };
 
     // ✏️ EDITAR
     if (idEditando) {
-        fetch(`${API_URL}/${idEditando}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(persona)
-        }).then(() => {
+        // Reemplazar en array
+        const index = personas.findIndex(p => p.id === idEditando);
+        if (index > -1) {
+            // Restar totales anteriores
+            totalSubs -= personas[index].subs;
+            totalBits -= personas[index].bits;
+            totalCofres -= personas[index].cofres;
+
+            personas[index] = persona;
+
+            // Actualizar tarjeta visual
             tarjetaEditando.remove();
-            restarTotales();
-            crearTarjeta({ id: idEditando, ...persona });
-            sumarTotales(subs, bits, cofres);
+            crearTarjeta(persona);
+
+            // Sumar totales nuevos
+            totalSubs += subs;
+            totalBits += bits;
+            totalCofres += cofres;
+
+            guardarPersonas();
+            actualizarTotales();
             limpiarFormulario();
-        });
+        }
         return;
     }
 
     // ➕ CREAR
-    fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(persona)
-    })
-        .then(res => res.json())
-        .then(data => {
-            crearTarjeta(data);
-            sumarTotales(subs, bits, cofres);
-            limpiarFormulario();
-        });
+    personas.push(persona);
+    crearTarjeta(persona);
+
+    totalSubs += subs;
+    totalBits += bits;
+    totalCofres += cofres;
+
+    guardarPersonas();
+    actualizarTotales();
+    limpiarFormulario();
 }
 
 // =======================
@@ -133,40 +146,24 @@ function eliminarPersona(boton) {
     const tarjeta = boton.closest(".persona");
     const id = tarjeta.dataset.id;
 
-    const subs = parseInt(tarjeta.querySelector(".subs").textContent);
-    const bits = parseInt(tarjeta.querySelector(".bits").textContent);
-    const cofres = parseInt(tarjeta.querySelector(".cofres").textContent);
+    const persona = personas.find(p => p.id === id);
+    if (!persona) return;
 
-    fetch(`${API_URL}/${id}`, { method: "DELETE" })
-        .then(() => {
-            tarjeta.remove();
-            totalSubs -= subs;
-            totalBits -= bits;
-            totalCofres -= cofres;
-            actualizarTotales();
-        });
+    totalSubs -= persona.subs;
+    totalBits -= persona.bits;
+    totalCofres -= persona.cofres;
+
+    // Eliminar del array y del DOM
+    personas = personas.filter(p => p.id !== id);
+    tarjeta.remove();
+
+    guardarPersonas();
+    actualizarTotales();
 }
 
 // =======================
 // 🔢 TOTALES
 // =======================
-function sumarTotales(subs, bits, cofres) {
-    totalSubs += subs;
-    totalBits += bits;
-    totalCofres += cofres;
-    actualizarTotales();
-}
-
-function restarTotales() {
-    const subs = parseInt(tarjetaEditando.querySelector(".subs").textContent);
-    const bits = parseInt(tarjetaEditando.querySelector(".bits").textContent);
-    const cofres = parseInt(tarjetaEditando.querySelector(".cofres").textContent);
-
-    totalSubs -= subs;
-    totalBits -= bits;
-    totalCofres -= cofres;
-}
-
 function actualizarTotales() {
     document.getElementById("totalSubs").textContent = totalSubs;
     document.getElementById("totalBits").textContent = totalBits;
@@ -194,4 +191,11 @@ function limpiarFormulario() {
     document.getElementById("cofres").value = "";
     tarjetaEditando = null;
     idEditando = null;
+}
+
+// =======================
+// 💾 GUARDAR EN LOCALSTORAGE
+// =======================
+function guardarPersonas() {
+    localStorage.setItem("personas", JSON.stringify(personas));
 }
