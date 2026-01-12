@@ -9,6 +9,8 @@ let personas = JSON.parse(localStorage.getItem("personas")) || [];
 document.getElementById("btnAgregar").addEventListener("click", agregarPersona);
 document.addEventListener("DOMContentLoaded", cargarPersonas);
 document.getElementById("btnReiniciar")?.addEventListener("click", reiniciarTodo);
+document.getElementById("buscador").addEventListener("input", filtrarYOrdenar);
+document.getElementById("ordenHoras").addEventListener("change", filtrarYOrdenar);
 
 function cargarPersonas() {
     totalSubs = 0;
@@ -23,6 +25,12 @@ function cargarPersonas() {
     });
 
     actualizarTotales();
+}
+
+function calcularMinutos(persona) {
+    return (persona.subs * 30) +
+        ((persona.bits / 100) * 6) +
+        (persona.cofres * 10);
 }
 
 function agregarPersona() {
@@ -197,4 +205,32 @@ function reiniciarTodo() {
         limpiarFormulario();
     }
 }
+
+function filtrarYOrdenar() {
+    const texto = document.getElementById("buscador").value.toLowerCase();
+    const orden = document.getElementById("ordenHoras").value;
+
+    let resultado = [...personas];
+
+    // 🔍 FILTRAR
+    if (texto) {
+        resultado = resultado.filter(p =>
+            p.nombre.toLowerCase().includes(texto)
+        );
+    }
+
+    // ⏱ ORDENAR POR TIEMPO
+    if (orden === "asc") {
+        resultado.sort((a, b) => calcularMinutos(a) - calcularMinutos(b));
+    }
+
+    if (orden === "desc") {
+        resultado.sort((a, b) => calcularMinutos(b) - calcularMinutos(a));
+    }
+
+    // 🔄 LIMPIAR Y VOLVER A DIBUJAR
+    document.getElementById("listaPersonas").innerHTML = "";
+    resultado.forEach(crearTarjeta);
+}
+
 
